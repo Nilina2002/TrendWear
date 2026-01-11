@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 import connectToDatabase from './db/db.js';
 import authRoutes from './routes/authRoutes.js';
 import productRoutes from './routes/productRoutes.js';
+import cartRoutes from './routes/cartRoutes.js';
 
 dotenv.config();
 connectToDatabase();
@@ -15,6 +16,7 @@ app.use(express.json());
 
 app.use('/api/auth', authRoutes);
 app.use('/api/products', productRoutes);
+app.use('/api/cart', cartRoutes);
 
 app.get('/api/health', (req, res) => {
     res.json({ success: true, message: 'Server is running' });

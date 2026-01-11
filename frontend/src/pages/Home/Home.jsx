@@ -1,13 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import API_BASE_URL from '../../config/api.js';
+import { useCart } from '../../contexts/CartContext.jsx';
 
 const Home = () => {
     const navigate = useNavigate();
+    const { getCartItemCount } = useCart();
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    
+    const [user, setUser] = useState(null);
+    const [showUserMenu, setShowUserMenu] = useState(false);
+
     // Filter states
     const [searchInput, setSearchInput] = useState('');
     const [searchTerm, setSearchTerm] = useState(''); // Applied search term
@@ -15,12 +19,25 @@ const Home = () => {
     const [selectedSize, setSelectedSize] = useState('');
     const [minPrice, setMinPrice] = useState('');
     const [maxPrice, setMaxPrice] = useState('');
-    
+
     // Pagination states
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const [totalProducts, setTotalProducts] = useState(0);
     const [limit, setLimit] = useState(10);
+
+    useEffect(() => {
+        // Check if user is logged in
+        const token = localStorage.getItem('token');
+        const userData = localStorage.getItem('user');
+        if (token && userData) {
+            try {
+                setUser(JSON.parse(userData));
+            } catch (err) {
+                console.error('Error parsing user data:', err);
+            }
+        }
+    }, []);
 
     useEffect(() => {
         fetchProducts();
@@ -29,7 +46,7 @@ const Home = () => {
     const fetchProducts = async () => {
         try {
             setLoading(true);
-            
+
             // Build query parameters
             const params = new URLSearchParams();
             if (searchTerm) params.append('search', searchTerm);
@@ -39,11 +56,11 @@ const Home = () => {
             if (maxPrice) params.append('maxPrice', maxPrice);
             params.append('page', currentPage);
             params.append('limit', limit);
-            
+
             const url = `${API_BASE_URL}/products?${params.toString()}`;
             const response = await fetch(url);
             const data = await response.json();
-            
+
             if (data.success) {
                 setProducts(data.data);
                 setTotalPages(data.pages);
@@ -79,6 +96,14 @@ const Home = () => {
         setCurrentPage(1);
     };
 
+    const handleLogout = () => {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        setUser(null);
+        setShowUserMenu(false);
+        navigate('/');
+    };
+
     const categories = ['All', 'Men', 'Women', 'Kids'];
     const sizes = ['S', 'M', 'L', 'XL'];
 
@@ -87,7 +112,99 @@ const Home = () => {
             {/* Header */}
             <header className="bg-white shadow-sm">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-                    <h1 className="text-3xl font-bold text-gray-900">TrendWear</h1>
+                    <div className="flex items-center justify-between">
+                        <h1 className="text-3xl font-bold text-gray-900">TrendWear</h1>
+
+                        <div className="flex items-center gap-4">
+                            {/* Cart Icon */}
+                            <Link
+                                to="/cart"
+                                className="relative flex items-center justify-center w-10 h-10 text-gray-700 hover:text-blue-600 transition-colors"
+                                aria-label="Shopping cart"
+                            >
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    className="h-6 w-6"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                    stroke="currentColor"
+                                >
+                                    <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth={2}
+                                        d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
+                                    />
+                                </svg>
+                                {getCartItemCount() > 0 && (
+                                    <span className="absolute -top-1 -right-1 bg-blue-600 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                                        {getCartItemCount() > 9 ? '9+' : getCartItemCount()}
+                                    </span>
+                                )}
+                            </Link>
+
+                            {user ? (
+                                <div className="relative">
+                                    <button
+                                        onClick={() => setShowUserMenu(!showUserMenu)}
+                                        className="flex items-center justify-center w-10 h-10 rounded-full bg-black text-white hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                                        aria-label="User menu"
+                                    >
+                                        <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            className="h-6 w-6"
+                                            fill="none"
+                                            viewBox="0 0 24 24"
+                                            stroke="currentColor"
+                                        >
+                                            <path
+                                                strokeLinecap="round"
+                                                strokeLinejoin="round"
+                                                strokeWidth={2}
+                                                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                                            />
+                                        </svg>
+                                    </button>
+
+                                    {showUserMenu && (
+                                        <>
+                                            <div
+                                                className="fixed inset-0 z-10"
+                                                onClick={() => setShowUserMenu(false)}
+                                            ></div>
+                                            <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 z-20 border border-gray-200">
+                                                <div className="px-4 py-2 border-b border-gray-200">
+                                                    <p className="text-sm font-semibold text-gray-900">{user.name}</p>
+                                                    <p className="text-xs text-gray-500 truncate">{user.email}</p>
+                                                </div>
+                                                <button
+                                                    onClick={handleLogout}
+                                                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
+                                                >
+                                                    Logout
+                                                </button>
+                                            </div>
+                                        </>
+                                    )}
+                                </div>
+                            ) : (
+                                <div className="flex items-center gap-4">
+                                    <Link
+                                        to="/login"
+                                        className="text-gray-700 hover:text-gray-900 font-medium"
+                                    >
+                                        Login
+                                    </Link>
+                                    <Link
+                                        to="/register"
+                                        className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                                    >
+                                        Sign Up
+                                    </Link>
+                                </div>
+                            )}
+                        </div>
+                    </div>
                 </div>
             </header>
 
@@ -122,7 +239,7 @@ const Home = () => {
                             Clear All
                         </button>
                     </div>
-                    
+
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                         {/* Category Filter */}
                         <div>
@@ -285,9 +402,8 @@ const Home = () => {
                                         </div>
                                         {product.stock !== undefined && (
                                             <div className="mt-2">
-                                                <span className={`text-xs ${
-                                                    product.stock > 0 ? 'text-green-600' : 'text-red-600'
-                                                }`}>
+                                                <span className={`text-xs ${product.stock > 0 ? 'text-green-600' : 'text-red-600'
+                                                    }`}>
                                                     {product.stock > 0 ? `In Stock (${product.stock})` : 'Out of Stock'}
                                                 </span>
                                             </div>
@@ -320,7 +436,7 @@ const Home = () => {
                                 >
                                     Previous
                                 </button>
-                                
+
                                 <div className="flex gap-1">
                                     {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNum) => {
                                         // Show first page, last page, current page, and pages around current
@@ -333,11 +449,10 @@ const Home = () => {
                                                 <button
                                                     key={pageNum}
                                                     onClick={() => setCurrentPage(pageNum)}
-                                                    className={`px-4 py-2 border rounded-lg ${
-                                                        currentPage === pageNum
-                                                            ? 'bg-blue-600 text-white border-blue-600'
-                                                            : 'border-gray-300 hover:bg-gray-50'
-                                                    }`}
+                                                    className={`px-4 py-2 border rounded-lg ${currentPage === pageNum
+                                                        ? 'bg-blue-600 text-white border-blue-600'
+                                                        : 'border-gray-300 hover:bg-gray-50'
+                                                        }`}
                                                 >
                                                     {pageNum}
                                                 </button>
@@ -351,7 +466,7 @@ const Home = () => {
                                         return null;
                                     })}
                                 </div>
-                                
+
                                 <button
                                     onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
                                     disabled={currentPage === totalPages}

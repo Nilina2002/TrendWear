@@ -2,8 +2,10 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import API_BASE_URL from "../../config/api.js";
+import { useCart } from "../../contexts/CartContext.jsx";
 
 function Login() {
+    const { mergeCarts, fetchCart } = useCart();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
@@ -21,6 +23,11 @@ function Login() {
             if (result.data.success) {
                 localStorage.setItem('token', result.data.token);
                 localStorage.setItem('user', JSON.stringify(result.data.user));
+
+                // Merge guest cart with user cart after login
+                await mergeCarts();
+                // Refresh cart to show merged items
+                await fetchCart();
 
                 navigate("/");
             } else {
