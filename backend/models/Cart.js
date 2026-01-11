@@ -41,11 +41,10 @@ cartSchema.index({ user: 1 });
 cartSchema.index({ sessionId: 1 });
 
 // Ensure either user or sessionId is present
-cartSchema.pre('save', function(next) {
+cartSchema.pre('save', async function() {
     if (!this.user && !this.sessionId) {
-        return next(new Error('Cart must have either a user or sessionId'));
+        throw new Error('Cart must have either a user or sessionId');
     }
-    next();
 });
 
 const Cart = mongoose.model('Cart', cartSchema);
