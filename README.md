@@ -19,6 +19,10 @@ A full-stack MERN (MongoDB, Express, React, Node.js) e-commerce web application 
   - Order tracking with status updates
 - **Responsive Design**: Modern UI built with Tailwind CSS
 
+## Unfinished Feature
+
+- **Order Confirmation email**: Sending email confirming the order (not completed yet due to timeframe restrictions with university project work)
+
 ## 🛠️ Tech Stack
 
 ### Backend
