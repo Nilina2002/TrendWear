@@ -3,6 +3,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import connectToDatabase from './db/db.js';
 import authRoutes from './routes/authRoutes.js';
+import productRoutes from './routes/productRoutes.js';
 
 dotenv.config();
 connectToDatabase();
@@ -13,6 +14,7 @@ app.use(cors());
 app.use(express.json());
 
 app.use('/api/auth', authRoutes);
+app.use('/api/products', productRoutes);
 
 app.get('/api/health', (req, res) => {
     res.json({ success: true, message: 'Server is running' });
