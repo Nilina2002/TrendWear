@@ -172,18 +172,24 @@ const Home = () => {
                                                 className="fixed inset-0 z-10"
                                                 onClick={() => setShowUserMenu(false)}
                                             ></div>
-                                            <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 z-20 border border-gray-200">
-                                                <div className="px-4 py-2 border-b border-gray-200">
-                                                    <p className="text-sm font-semibold text-gray-900">{user.name}</p>
-                                                    <p className="text-xs text-gray-500 truncate">{user.email}</p>
-                                                </div>
-                                                <button
-                                                    onClick={handleLogout}
-                                                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
-                                                >
-                                                    Logout
-                                                </button>
+                                        <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 z-20 border border-gray-200">
+                                            <div className="px-4 py-2 border-b border-gray-200">
+                                                <p className="text-sm font-semibold text-gray-900">{user.name}</p>
+                                                <p className="text-xs text-gray-500 truncate">{user.email}</p>
                                             </div>
+                                            <Link
+                                                to="/orders"
+                                                className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
+                                            >
+                                                My Orders
+                                            </Link>
+                                            <button
+                                                onClick={handleLogout}
+                                                className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
+                                            >
+                                                Logout
+                                            </button>
+                                        </div>
                                         </>
                                     )}
                                 </div>

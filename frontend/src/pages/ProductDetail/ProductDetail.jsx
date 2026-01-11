@@ -175,6 +175,12 @@ const ProductDetail = () => {
                                                 <p className="text-sm font-semibold text-gray-900">{user.name}</p>
                                                 <p className="text-xs text-gray-500 truncate">{user.email}</p>
                                             </div>
+                                            <Link
+                                                to="/orders"
+                                                className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
+                                            >
+                                                My Orders
+                                            </Link>
                                             <button
                                                 onClick={handleLogout}
                                                 className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"

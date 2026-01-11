@@ -5,6 +5,7 @@ import Login from './pages/Login/Login.jsx'
 import Home from './pages/Home/Home.jsx'
 import ProductDetail from './pages/ProductDetail/ProductDetail.jsx'
 import Cart from './pages/Cart/Cart.jsx'
+import Orders from './pages/Orders/Orders.jsx'
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
         <Route path='/login' element={<Login />} />
         <Route path='/product/:id' element={<ProductDetail />} />
         <Route path='/cart' element={<Cart />} />
+        <Route path='/orders' element={<Orders />} />
       </Routes>
     </BrowserRouter>
   )

@@ -4,9 +4,11 @@ import { useCart } from '../../contexts/CartContext.jsx';
 import API_BASE_URL from '../../config/api.js';
 
 const Cart = () => {
-    const { cart, loading, updateCartItem, removeFromCart, clearCart, getCartTotal } = useCart();
+    const { cart, loading, updateCartItem, removeFromCart, clearCart, getCartTotal, fetchCart } = useCart();
     const [user, setUser] = useState(null);
     const [showUserMenu, setShowUserMenu] = useState(false);
+    const [checkoutLoading, setCheckoutLoading] = useState(false);
+    const [checkoutError, setCheckoutError] = useState('');
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -46,6 +48,49 @@ const Cart = () => {
     const handleClearCart = async () => {
         if (window.confirm('Are you sure you want to clear your entire cart?')) {
             await clearCart();
+        }
+    };
+
+    const handleCheckout = async () => {
+        if (!user) {
+            alert('Please login to proceed to checkout');
+            navigate('/login');
+            return;
+        }
+
+        if (cartItems.length === 0) {
+            setCheckoutError('Your cart is empty');
+            return;
+        }
+
+        setCheckoutLoading(true);
+        setCheckoutError('');
+
+        try {
+            const token = localStorage.getItem('token');
+            const response = await fetch(`${API_BASE_URL}/orders/checkout`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                // Refresh cart to show it's empty
+                await fetchCart();
+                // Navigate to orders page with success message
+                navigate('/orders', { state: { orderId: data.data._id, message: 'Order placed successfully!' } });
+            } else {
+                setCheckoutError(data.message || 'Failed to place order');
+            }
+        } catch (error) {
+            console.error('Checkout error:', error);
+            setCheckoutError('An error occurred during checkout. Please try again.');
+        } finally {
+            setCheckoutLoading(false);
         }
     };
 
@@ -101,18 +146,24 @@ const Cart = () => {
                                             className="fixed inset-0 z-10"
                                             onClick={() => setShowUserMenu(false)}
                                         ></div>
-                                        <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 z-20 border border-gray-200">
-                                            <div className="px-4 py-2 border-b border-gray-200">
-                                                <p className="text-sm font-semibold text-gray-900">{user.name}</p>
-                                                <p className="text-xs text-gray-500 truncate">{user.email}</p>
-                                            </div>
-                                            <button
-                                                onClick={handleLogout}
-                                                className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
-                                            >
-                                                Logout
-                                            </button>
+                                    <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 z-20 border border-gray-200">
+                                        <div className="px-4 py-2 border-b border-gray-200">
+                                            <p className="text-sm font-semibold text-gray-900">{user.name}</p>
+                                            <p className="text-xs text-gray-500 truncate">{user.email}</p>
                                         </div>
+                                        <Link
+                                            to="/orders"
+                                            className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
+                                        >
+                                            My Orders
+                                        </Link>
+                                        <button
+                                            onClick={handleLogout}
+                                            className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
+                                        >
+                                            Logout
+                                        </button>
+                                    </div>
                                     </>
                                 )}
                             </div>
@@ -293,18 +344,18 @@ const Cart = () => {
                                     </div>
                                 </div>
 
+                                {checkoutError && (
+                                    <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm">
+                                        {checkoutError}
+                                    </div>
+                                )}
+
                                 <button
-                                    onClick={() => {
-                                        if (!user) {
-                                            alert('Please login to proceed to checkout');
-                                            navigate('/login');
-                                        } else {
-                                            alert('Checkout functionality coming soon!');
-                                        }
-                                    }}
-                                    className="w-full py-3 px-6 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-semibold"
+                                    onClick={handleCheckout}
+                                    disabled={checkoutLoading || cartItems.length === 0}
+                                    className="w-full py-3 px-6 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
-                                    {user ? 'Proceed to Checkout' : 'Login to Checkout'}
+                                    {checkoutLoading ? 'Processing...' : (user ? 'Proceed to Checkout' : 'Login to Checkout')}
                                 </button>
 
                                 <Link
