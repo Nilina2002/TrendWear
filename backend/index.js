@@ -1,7 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import connectToDatabase from './db/db';
+import connectToDatabase from './db/db.js';
 
 dotenv.config();
 connectToDatabase();
