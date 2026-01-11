@@ -8,12 +8,12 @@ A full-stack MERN (MongoDB, Express, React, Node.js) e-commerce web application 
 - **Product Catalog**: Browse products with filtering by category, size, and price range
 - **Product Search**: Search products by name or description
 - **Product Details**: View detailed product information with size selection
-- **Shopping Cart**: 
+- **Shopping Cart**:
   - Add items with selected sizes
   - Update quantities and remove items
   - Cart persists for both logged-in users and guests
   - Cart automatically merges when guest users log in
-- **Checkout & Orders**: 
+- **Checkout & Orders**:
   - Mock checkout process (no real payments)
   - Order history with detailed information
   - Order tracking with status updates
@@ -22,6 +22,7 @@ A full-stack MERN (MongoDB, Express, React, Node.js) e-commerce web application 
 ## 🛠️ Tech Stack
 
 ### Backend
+
 - **Node.js** - Runtime environment
 - **Express.js** - Web framework
 - **MongoDB** - Database
@@ -30,6 +31,7 @@ A full-stack MERN (MongoDB, Express, React, Node.js) e-commerce web application 
 - **bcryptjs** - Password hashing
 
 ### Frontend
+
 - **React** - UI library
 - **React Router** - Routing
 - **Vite** - Build tool
@@ -178,6 +180,7 @@ The frontend will run on `http://localhost:5173` (or another port if 5173 is bus
 ### Access the Application
 
 Open your browser and navigate to:
+
 ```
 http://localhost:5173
 ```
@@ -238,14 +241,17 @@ TrendWear-ecommerce-webapp-mern/
 ## 🔌 API Endpoints
 
 ### Authentication
+
 - `POST /api/auth/signup` - Register new user
 - `POST /api/auth/login` - Login user
 
 ### Products
+
 - `GET /api/products` - Get all products (with filters)
 - `GET /api/products/:id` - Get product by ID
 
 ### Cart
+
 - `GET /api/cart` - Get user's cart
 - `POST /api/cart/add` - Add item to cart
 - `PUT /api/cart/item/:itemId` - Update cart item quantity
@@ -254,6 +260,7 @@ TrendWear-ecommerce-webapp-mern/
 - `POST /api/cart/merge` - Merge guest cart with user cart (requires auth)
 
 ### Orders
+
 - `POST /api/orders/checkout` - Create order (requires auth)
 - `GET /api/orders` - Get user's orders (requires auth)
 - `GET /api/orders/:id` - Get order by ID (requires auth)
@@ -273,28 +280,33 @@ TrendWear-ecommerce-webapp-mern/
 ### Backend Issues
 
 **MongoDB Connection Error**
+
 - Ensure MongoDB is running (local) or connection string is correct (Atlas)
 - Check if `MONGODB_URL` in `.env` is correct
 - Verify network connectivity for MongoDB Atlas
 
 **Port Already in Use**
+
 - Change `PORT` in backend `.env` to a different port
 - Update `VITE_API_BASE_URL` in frontend `.env` accordingly
 
 ### Frontend Issues
 
 **API Connection Error**
+
 - Ensure backend server is running
 - Check `VITE_API_BASE_URL` in frontend `.env`
 - Verify CORS settings in backend (should allow frontend origin)
 
 **Build Errors**
+
 - Delete `node_modules` and `package-lock.json`
 - Run `npm install` again
 
 ## 📝 Environment Variables Summary
 
 ### Backend (.env)
+
 ```env
 MONGODB_URL=mongodb://localhost:27017/trendwear
 PORT=3000
@@ -302,6 +314,7 @@ JWT_SECRET=your_secret_key
 ```
 
 ### Frontend (.env)
+
 ```env
 VITE_API_BASE_URL=http://localhost:3000/api
 ```
@@ -309,12 +322,14 @@ VITE_API_BASE_URL=http://localhost:3000/api
 ## 🚢 Production Deployment
 
 ### Backend
+
 1. Set `NODE_ENV=production`
 2. Use a strong `JWT_SECRET`
 3. Use MongoDB Atlas or a managed MongoDB service
 4. Deploy to platforms like Heroku, Railway, or AWS
 
 ### Frontend
+
 1. Build the frontend: `npm run build`
 2. Deploy the `dist` folder to platforms like Vercel, Netlify, or AWS S3
 3. Update `VITE_API_BASE_URL` to your production backend URL
@@ -330,7 +345,3 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 ## 📧 Support
 
 For issues and questions, please open an issue on the [GitHub repository](https://github.com/Nilina2002/TrendWear/issues).
-
----
-
-**Happy Shopping! 🛍️**
