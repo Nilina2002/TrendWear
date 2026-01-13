@@ -28,7 +28,7 @@ export const createOrder = async (req, res) => {
 
         for (const cartItem of cart.items) {
             const product = cartItem.product;
-            
+
             if (!product) {
                 return res.status(400).json({
                     success: false,
@@ -116,7 +116,7 @@ export const getUserOrders = async (req, res) => {
 
         const orders = await Order.find({ user: req.user._id })
             .populate('items.product')
-            .sort({ orderDate: -1 });
+            .sort({ status });
 
         res.status(200).json({
             success: true,
